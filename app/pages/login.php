@@ -15,11 +15,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($user && !$user['password_hash']) {
-        $errors['login'] = 'This account was created with Google. Use "Continue with Google" to log in.';
+        $errors['login'] = t('This account was created with Google. Use "Continue with Google" to log in.');
     } else {
-        $errors['login'] = 'The email, username or password is not correct.';
+        $errors['login'] = t('The email, username or password is not correct.');
     }
     usleep(400000); // slow down guessing
 }
 
-render('login', ['title' => 'Log in', 'bodyClass' => 'is-auth']);
+render('login', ['title' => t('Log in'), 'bodyClass' => 'is-auth']);

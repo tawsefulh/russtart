@@ -4,7 +4,7 @@ Options -Indexes
     RewriteEngine On
 
     # Never serve application code, config or SQL directly
-    RewriteRule ^(app|config|database)(/|$) - [F,L]
+    RewriteRule ^(app|config|database|lang)(/|$) - [F,L]
     RewriteRule (^|/)\.(git|htaccess|gitignore) - [F,L]
 
     # Real files (css, js, images, uploads) are served as they are

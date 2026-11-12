@@ -3,7 +3,7 @@
 function google_fail(string $why = ''): void
 {
     global $config;
-    flash('error', 'Google sign-in did not finish. Try again.' . ($config['debug'] && $why ? " ($why)" : ''));
+    flash('error', t('Google sign-in did not finish. Try again.') . ($config['debug'] && $why ? " ($why)" : ''));
     redirect('login');
 }
 
@@ -35,7 +35,7 @@ $token = http_json('https://oauth2.googleapis.com/token', [
     'code'          => query('code'),
     'client_id'     => $config['google']['client_id'],
     'client_secret' => $config['google']['client_secret'],
-    'redirect_uri'  => ORIGIN . url('auth/google/callback'),
+    'redirect_uri'  => ORIGIN . base_url('auth/google/callback'),
     'grant_type'    => 'authorization_code',
 ]);
 if (empty($token['access_token'])) {

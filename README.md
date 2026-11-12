@@ -6,6 +6,8 @@ A website for international students who are new to Russia.
 - **Marketplace**: people already in Russia post advertisements; newcomers contact them by phone, WhatsApp or Telegram.
 - **Accounts**: sign up with name, username, email, password, city and university, or continue with Google.
 
+- **Two languages**: English at `/`, Russian at `/ru/`. Visitors whose browser is set to Russian are sent to `/ru/` on their first visit, and anyone can switch with the selector in the header.
+
 Built with plain PHP 8 and MySQL/MariaDB, so it runs on XAMPP and on ordinary PHP hosting. No Composer or build step.
 
 ## Run it locally (XAMPP)
@@ -39,6 +41,7 @@ The "Continue with Google" button appears only when both keys are set.
 | `app/views` | HTML templates |
 | `app/helpers.php` | Shared functions (forms, validation, uploads) |
 | `assets` | CSS, JavaScript, logo |
-| `config` | Settings |
+| `lang` | Russian translations (`ru.php`). Text missing there shows in English |
+| `config` | Settings (database, Google keys, main city) |
 | `database` | Schema and default cities and categories |
 | `uploads` | Images uploaded by members |

@@ -6,20 +6,34 @@ function e($value): string
     return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
 }
 
+/** Link to a page, in the current language. */
 function url(string $path = ''): string
 {
+    return BASE_URL . (LANG === 'ru' ? '/ru' : '') . '/' . ltrim($path, '/');
+}
+
+/** Link without a language prefix (files, Google callback). */
+function base_url(string $path = ''): string
+{
     return BASE_URL . '/' . ltrim($path, '/');
+}
+
+/** The current page in another language. */
+function lang_url(string $code): string
+{
+    $query = $_SERVER['QUERY_STRING'] ?? '';
+    return BASE_URL . ($code === 'ru' ? '/ru' : '') . ROUTE_PATH . ($query !== '' ? '?' . $query : '');
 }
 
 function asset(string $path): string
 {
     $file = ROOT . '/assets/' . $path;
-    return url('assets/' . $path) . '?v=' . (is_file($file) ? filemtime($file) : 1);
+    return base_url('assets/' . $path) . '?v=' . (is_file($file) ? filemtime($file) : 1);
 }
 
 function upload_url(?string $file): ?string
 {
-    return $file ? url('uploads/' . $file) : null;
+    return $file ? base_url('uploads/' . $file) : null;
 }
 
 function redirect(string $path): void
@@ -71,7 +85,7 @@ function csrf_check(): void
     $sent = $_POST['_csrf'] ?? '';
     if (!is_string($sent) || !hash_equals(csrf_token(), $sent)) {
         http_response_code(419);
-        exit('This form expired. Go back, refresh the page and try again.');
+        exit(t('This form expired. Go back, refresh the page and try again.'));
     }
 }
 
@@ -170,16 +184,15 @@ function short_date(string $datetime): string
     $t = strtotime($datetime);
     $diff = time() - $t;
     if ($diff < 3600) {
-        return max(1, (int) floor($diff / 60)) . ' min ago';
+        return t('%d min ago', max(1, (int) floor($diff / 60)));
     }
     if ($diff < 86400) {
-        return (int) floor($diff / 3600) . ' h ago';
+        return t('%d h ago', (int) floor($diff / 3600));
     }
     if ($diff < 7 * 86400) {
-        $d = (int) floor($diff / 86400);
-        return $d . ($d === 1 ? ' day ago' : ' days ago');
+        return t('%s ago', tn((int) floor($diff / 86400), 'day'));
     }
-    return date(date('Y') === date('Y', $t) ? 'j M' : 'j M Y', $t);
+    return date('j', $t) . ' ' . month_name((int) date('n', $t), true) . (date('Y') === date('Y', $t) ? '' : date(' Y', $t));
 }
 
 function initials(string $name): string
@@ -192,7 +205,7 @@ function initials(string $name): string
 function price_label($price): string
 {
     if ($price === null || $price === '') {
-        return 'Price on request';
+        return t('Price on request');
     }
     return number_format((float) $price, 0, '.', ' ') . ' ₽';
 }
@@ -241,18 +254,18 @@ function save_image(string $field): ?string
         return null;
     }
     if ($f['error'] !== UPLOAD_ERR_OK || $f['size'] > 3 * 1024 * 1024) {
-        $errors[$field] = 'The image must be smaller than 3 MB.';
+        $errors[$field] = t('The image must be smaller than 3 MB.');
         return null;
     }
     $types = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
     $mime = (new finfo(FILEINFO_MIME_TYPE))->file($f['tmp_name']);
     if (!isset($types[$mime]) || !@getimagesize($f['tmp_name'])) {
-        $errors[$field] = 'Upload a JPG, PNG or WebP image.';
+        $errors[$field] = t('Upload a JPG, PNG or WebP image.');
         return null;
     }
     $name = bin2hex(random_bytes(12)) . '.' . $types[$mime];
     if (!move_uploaded_file($f['tmp_name'], ROOT . '/uploads/' . $name)) {
-        $errors[$field] = 'The image could not be saved. Try again.';
+        $errors[$field] = t('The image could not be saved. Try again.');
         return null;
     }
     return $name;
@@ -269,13 +282,17 @@ function delete_upload(?string $file): void
 
 function all_cities(): array
 {
+    global $config;
     static $rows = null;
-    return $rows ??= q('SELECT id, name, slug FROM cities ORDER BY is_default DESC, IF(is_default, id, 0), name')->fetchAll();
+    return $rows ??= q('SELECT c.id, ' . name_sql('c') . ' AS name, c.slug FROM cities c
+                        ORDER BY c.slug = ? DESC, c.is_default DESC, IF(c.is_default, c.id, 0), name',
+        [$config['main_city']])->fetchAll();
 }
 
 function all_categories(string $type): array
 {
-    return q('SELECT id, name, slug FROM categories WHERE type = ? ORDER BY is_default DESC, IF(is_default, id, 0), name', [$type])->fetchAll();
+    return q('SELECT k.id, ' . name_sql('k') . ' AS name, k.slug FROM categories k
+              WHERE k.type = ? ORDER BY k.is_default DESC, IF(k.is_default, k.id, 0), name', [$type])->fetchAll();
 }
 
 function clean_name(string $name): string
@@ -295,15 +312,15 @@ function resolve_city(string $field = 'city'): ?int
     if ($value === '__other') {
         $name = clean_name(post($field . '_other'));
         if (mb_strlen($name) < 2 || mb_strlen($name) > 80 || !preg_match('/^[\p{L}][\p{L}\s.\'\-]*$/u', $name)) {
-            $errors[$field] = 'Type the name of your city.';
+            $errors[$field] = t('Type the name of your city.');
             return null;
         }
         $slug = slugify($name);
         if ($slug === '') {
-            $errors[$field] = 'Type the city name in English letters.';
+            $errors[$field] = t('Type the name of your city.');
             return null;
         }
-        $found = q('SELECT id FROM cities WHERE slug = ? OR name = ?', [$slug, $name])->fetch();
+        $found = q('SELECT id FROM cities WHERE slug = ? OR name = ? OR name_ru = ?', [$slug, $name, $name])->fetch();
         if ($found) {
             return (int) $found['id'];
         }
@@ -313,7 +330,7 @@ function resolve_city(string $field = 'city'): ?int
     if (ctype_digit($value) && q('SELECT 1 FROM cities WHERE id = ?', [$value])->fetch()) {
         return (int) $value;
     }
-    $errors[$field] = 'Choose a city.';
+    $errors[$field] = t('Choose a city.');
     return null;
 }
 
@@ -325,10 +342,10 @@ function resolve_category(string $type, string $field = 'category'): ?int
         $name = clean_name(post($field . '_other'));
         $slug = slugify($name);
         if (mb_strlen($name) < 2 || mb_strlen($name) > 80 || $slug === '') {
-            $errors[$field] = 'Type a name for the new category.';
+            $errors[$field] = t('Type a name for the new category.');
             return null;
         }
-        $found = q('SELECT id FROM categories WHERE type = ? AND (slug = ? OR name = ?)', [$type, $slug, $name])->fetch();
+        $found = q('SELECT id FROM categories WHERE type = ? AND (slug = ? OR name = ? OR name_ru = ?)', [$type, $slug, $name, $name])->fetch();
         if ($found) {
             return (int) $found['id'];
         }
@@ -338,7 +355,7 @@ function resolve_category(string $type, string $field = 'category'): ?int
     if (ctype_digit($value) && q('SELECT 1 FROM categories WHERE id = ? AND type = ?', [$value, $type])->fetch()) {
         return (int) $value;
     }
-    $errors[$field] = 'Choose a category.';
+    $errors[$field] = t('Choose a category.');
     return null;
 }
 
@@ -373,7 +390,7 @@ function field(string $name, string $label, array $o = []): string
         $control = '<input id="' . $id . '" type="' . e($type) . '" name="' . e($name) . '" value="' . $shown . '" placeholder=" "' . $attrs . '>';
     }
     $toggle = $type === 'password'
-        ? '<button type="button" class="field-toggle" data-toggle-password aria-label="Show password">Show</button>'
+        ? '<button type="button" class="field-toggle" data-toggle-password aria-label="' . et('Show password') . '">' . et('Show') . '</button>'
         : '';
     $hint = !empty($o['hint']) ? '<p class="field-hint">' . e($o['hint']) . '</p>' : '';
 
@@ -412,7 +429,7 @@ function select_field(string $name, string $label, array $options, array $o = []
     if (!empty($o['other'])) {
         $html .= '<div class="select-other" data-other-for="' . $id . '"' . ($selected === '__other' ? '' : ' hidden') . '>'
             . '<div class="field-box"><input id="' . $id . '-other" type="text" name="' . e($name) . '_other" value="' . e(old($name . '_other')) . '" placeholder=" " maxlength="80">'
-            . '<label for="' . $id . '-other">' . e($o['other_label'] ?? 'Type it here') . '</label></div></div>';
+            . '<label for="' . $id . '-other">' . e($o['other_label'] ?? t('Type it here')) . '</label></div></div>';
     }
     return $html . field_error($name) . '</div>';
 }

@@ -7,8 +7,8 @@
 function post_select(string $table): string
 {
     return "SELECT p.*, u.name AS author, u.username, u.university,
-                   c.name AS city, c.slug AS city_slug,
-                   k.name AS category, k.slug AS category_slug
+                   " . name_sql('c') . " AS city, c.slug AS city_slug,
+                   " . name_sql('k') . " AS category, k.slug AS category_slug
             FROM `$table` p
             JOIN users u ON u.id = p.user_id
             JOIN cities c ON c.id = p.city_id
@@ -24,8 +24,8 @@ function post_where(string $table, array $f): array
     if (!empty($f['q'])) {
         foreach (array_slice(preg_split('/\s+/u', $f['q']), 0, 5) as $word) {
             $like = '%' . addcslashes($word, '%_\\') . '%';
-            $where[] = "(p.title LIKE ? OR $text LIKE ? OR c.name LIKE ? OR k.name LIKE ?)";
-            array_push($params, $like, $like, $like, $like);
+            $where[] = "(p.title LIKE ? OR $text LIKE ? OR c.name LIKE ? OR c.name_ru LIKE ? OR k.name LIKE ? OR k.name_ru LIKE ?)";
+            array_push($params, $like, $like, $like, $like, $like, $like);
         }
     }
     if (!empty($f['city'])) {

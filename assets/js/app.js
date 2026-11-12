@@ -11,17 +11,33 @@
         return node;
     };
     let uid = 0;
+    const TEXT = window.I18N || {};
 
     /* ---------- header ---------- */
 
     const header = $('[data-header]');
     if (header) {
-        const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 12);
-        onScroll();
-        window.addEventListener('scroll', onScroll, { passive: true });
-
         const toggle = $('[data-nav-toggle]');
         const nav = $('[data-nav]');
+        let lastY = window.scrollY;
+
+        // hide when scrolling down, show again as soon as the page moves up
+        const onScroll = () => {
+            const y = window.scrollY;
+            header.classList.toggle('scrolled', y > 12);
+            const navOpen = nav && nav.classList.contains('open');
+            if (!navOpen && y > lastY + 4 && y > 160) {
+                header.classList.add('is-hidden');
+                $$('.menu.open', header).forEach((m) => m.classList.remove('open'));
+            } else if (y < lastY - 4 || y <= 160) {
+                header.classList.remove('is-hidden');
+            }
+            lastY = y;
+        };
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
+        header.addEventListener('focusin', () => header.classList.remove('is-hidden'));
+
         if (toggle && nav) {
             toggle.addEventListener('click', () => {
                 const open = nav.classList.toggle('open');
@@ -29,6 +45,43 @@
                 toggle.setAttribute('aria-expanded', String(open));
             });
         }
+    }
+
+    /* ---------- hero route: every city, scroll with arrows or by dragging ---------- */
+
+    const routeWrap = $('[data-route]');
+    if (routeWrap) {
+        const route = $('.route', routeWrap);
+        const arrows = $('.route-arrows', routeWrap);
+        const prev = $('[data-route-prev]', routeWrap);
+        const next = $('[data-route-next]', routeWrap);
+
+        const update = () => {
+            const can = route.scrollWidth > route.clientWidth + 4;
+            routeWrap.classList.toggle('can-scroll', can);
+            arrows.hidden = !can;
+            prev.disabled = route.scrollLeft <= 2;
+            next.disabled = route.scrollLeft + route.clientWidth >= route.scrollWidth - 2;
+        };
+        const step = (dir) => route.scrollBy({ left: dir * route.clientWidth * 0.7, behavior: 'smooth' });
+        prev.addEventListener('click', () => step(-1));
+        next.addEventListener('click', () => step(1));
+        route.addEventListener('scroll', update, { passive: true });
+        window.addEventListener('resize', update);
+        update();
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(update);
+
+        // drag with the mouse (touch screens scroll natively)
+        let startX = 0, startLeft = 0, down = false, moved = false;
+        route.addEventListener('mousedown', (e) => { down = true; moved = false; startX = e.pageX; startLeft = route.scrollLeft; });
+        window.addEventListener('mousemove', (e) => {
+            if (!down) return;
+            const dx = e.pageX - startX;
+            if (Math.abs(dx) > 5) { moved = true; route.classList.add('dragging'); }
+            if (moved) route.scrollLeft = startLeft - dx;
+        });
+        window.addEventListener('mouseup', () => { down = false; setTimeout(() => route.classList.remove('dragging'), 0); });
+        route.addEventListener('click', (e) => { if (moved) { e.preventDefault(); moved = false; } }, true);
     }
 
     /* ---------- account menu ---------- */
@@ -79,11 +132,11 @@
         const realOptions = options.filter((o) => o.value !== '' || o.textContent.trim() !== '');
         let search = null;
         if (realOptions.length > 8) {
-            search = el('input', { type: 'text', class: 'select-search', placeholder: 'Type to filter', 'aria-label': `Filter ${wrap.dataset.label || 'options'}`, autocomplete: 'off' });
+            search = el('input', { type: 'text', class: 'select-search', placeholder: TEXT.filter || 'Type to filter', 'aria-label': `${TEXT.filter || 'Filter'}: ${wrap.dataset.label || ''}`, autocomplete: 'off' });
             panel.append(search);
         }
         const list = el('ul', { class: 'select-list', role: 'listbox', id, tabindex: '-1' });
-        const empty = el('p', { class: 'select-empty', hidden: '' }, 'Nothing matches. Choose "Other" to add it.');
+        const empty = el('p', { class: 'select-empty', hidden: '' }, TEXT.nothing || 'Nothing matches. Choose "Other" to add it.');
         panel.append(list, empty);
 
         const items = realOptions.map((opt, i) => {
@@ -107,7 +160,7 @@
             value.textContent = has ? opt.textContent : '';
             wrap.classList.toggle('has-value', has);
             items.forEach((li) => li.setAttribute('aria-selected', String(has && li.dataset.value === opt.value)));
-            btn.setAttribute('aria-label', `${wrap.dataset.label || ''}: ${has ? opt.textContent : 'not chosen'}`);
+            btn.setAttribute('aria-label', `${wrap.dataset.label || ''}: ${has ? opt.textContent : (TEXT.notChosen || 'not chosen')}`);
             if (otherBox) {
                 const show = select.value === '__other';
                 otherBox.hidden = !show;
@@ -286,8 +339,8 @@
             const input = $('input', btn.parentElement);
             const show = input.type === 'password';
             input.type = show ? 'text' : 'password';
-            btn.textContent = show ? 'Hide' : 'Show';
-            btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+            btn.textContent = show ? (TEXT.hide || 'Hide') : (TEXT.show || 'Show');
+            btn.setAttribute('aria-label', show ? (TEXT.hidePass || 'Hide password') : (TEXT.showPass || 'Show password'));
         });
     });
 

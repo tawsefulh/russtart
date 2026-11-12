@@ -8,7 +8,7 @@ $more = q(post_select('ads') . ' WHERE p.city_id = ? AND p.id <> ? ORDER BY p.cr
     [$ad['city_id'], $ad['id']])->fetchAll();
 
 render('ad_show', [
-    'title'       => $ad['title'] . ' in ' . $ad['city'],
+    'title'       => $ad['title'] . ', ' . $ad['city'],
     'description' => excerpt($ad['description'], 150),
     'ad'          => $ad,
     'more'        => $more,

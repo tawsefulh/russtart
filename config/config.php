@@ -8,6 +8,10 @@
 $config = [
     'app_name' => 'RusStart',
 
+    // The city the project is centred on (slug from the cities table).
+    // It is listed first everywhere and highlighted in the hero.
+    'main_city' => 'novosibirsk',
+
     'db' => [
         'host' => '127.0.0.1',
         'port' => 3307,          // XAMPP MySQL was moved to 3307 on this PC

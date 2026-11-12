@@ -12,6 +12,20 @@ date_default_timezone_set('Europe/Moscow');
 $base = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '')), '/');
 define('BASE_URL', $base === '.' ? '' : $base);
 
+// Page being asked for, without the site folder and without the language prefix
+$routePath = rawurldecode(parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?? '/');
+if (BASE_URL !== '' && str_starts_with($routePath, BASE_URL)) {
+    $routePath = substr($routePath, strlen(BASE_URL));
+}
+$routePath = '/' . trim($routePath, '/');
+$urlLang = 'en';
+if (preg_match('#^/ru(/.*)?$#', $routePath, $m)) {
+    $urlLang = 'ru';
+    $routePath = '/' . trim($m[1] ?? '', '/');
+}
+define('URL_LANG', $urlLang);      // English pages: /articles   Russian pages: /ru/articles
+define('ROUTE_PATH', $routePath);
+
 $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
     || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
 define('ORIGIN', ($https ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost'));
@@ -28,6 +42,7 @@ session_start();
 
 require ROOT . '/app/db.php';
 require ROOT . '/app/helpers.php';
+require ROOT . '/app/i18n.php';
 require ROOT . '/app/auth.php';
 require ROOT . '/app/queries.php';
 

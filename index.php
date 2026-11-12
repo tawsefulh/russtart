@@ -13,16 +13,20 @@ if (PHP_SAPI === 'cli-server') {
 
 require __DIR__ . '/app/bootstrap.php';
 
-$path = rawurldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '/');
-if (BASE_URL !== '' && str_starts_with($path, BASE_URL)) {
-    $path = substr($path, strlen(BASE_URL));
+$path = ROUTE_PATH;
+
+// A visitor who prefers Russian (chosen earlier, or detected) and opened an English address goes to /ru
+if (URL_LANG === 'en' && $_SERVER['REQUEST_METHOD'] === 'GET' && preferred_lang() === 'ru'
+    && !preg_match('#^/(language|auth)/#', $path)) {
+    header('Location: ' . lang_url('ru'), true, 302);
+    exit;
 }
-$path = '/' . trim($path, '/');
 
 $slug = '([a-z0-9][a-z0-9-]*)';
 $routes = [
     '#^/$#'                           => 'home',
     '#^/go$#'                         => 'go',
+    '#^/language/(en|ru)$#'           => 'lang',
     '#^/login$#'                      => 'login',
     '#^/register$#'                   => 'register',
     '#^/logout$#'                     => 'logout',
@@ -49,7 +53,7 @@ foreach ($routes as $pattern => $page) {
 
         // People who signed up with Google still owe us a city and university
         $u = current_user();
-        if ($u && (!$u['city_id'] || !$u['university']) && !in_array($page, ['complete_profile', 'logout'], true)) {
+        if ($u && (!$u['city_id'] || !$u['university']) && !in_array($page, ['complete_profile', 'logout', 'lang'], true)) {
             redirect('complete-profile');
         }
 

@@ -12,20 +12,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors['username'] = $msg;
     }
     if (mb_strlen($university) < 2 || mb_strlen($university) > 160) {
-        $errors['university'] = 'Enter your university.';
+        $errors['university'] = t('Enter your university.');
     }
     $cityId = resolve_city();
 
     if (!$errors) {
         q('UPDATE users SET username = ?, university = ?, city_id = ? WHERE id = ?',
             [$username, $university, $cityId, $user['id']]);
-        flash('success', 'Profile complete. Welcome to RusStart.');
+        flash('success', t('Profile complete. Welcome to RusStart.'));
         redirect_after_login();
     }
 }
 
 render('complete_profile', [
-    'title'     => 'Finish your profile',
+    'title'     => t('Finish your profile'),
     'user'      => $user,
     'cities'    => all_cities(),
     'bodyClass' => 'is-auth',

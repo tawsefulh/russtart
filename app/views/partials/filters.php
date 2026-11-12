@@ -6,7 +6,7 @@
             <label for="f-q"><?= e($placeholder) ?></label>
         </div>
     </div>
-    <?= select_field('city', 'City', all_cities(), ['selected' => $filters['city'], 'value_key' => 'slug', 'any' => 'All cities']) ?>
-    <?= select_field('category', 'Category', $categories, ['selected' => $filters['category'], 'value_key' => 'slug', 'any' => 'All categories']) ?>
-    <button class="btn btn-navy" type="submit">Search</button>
+    <?= select_field('city', t('City'), all_cities(), ['selected' => $filters['city'], 'value_key' => 'slug', 'any' => t('All cities')]) ?>
+    <?= select_field('category', t('Category'), $categories, ['selected' => $filters['category'], 'value_key' => 'slug', 'any' => t('All categories')]) ?>
+    <button class="btn btn-navy" type="submit"><?= et('Search') ?></button>
 </form>

@@ -5,10 +5,11 @@ if ($text === '') {
     redirect('articles');
 }
 
-$city = q('SELECT slug FROM cities WHERE name = ? OR slug = ?', [$text, slugify($text)])->fetch();
+$city = q('SELECT slug FROM cities WHERE name = ? OR name_ru = ? OR slug = ?', [$text, $text, slugify($text)])->fetch();
 if (!$city) {
-    $city = q('SELECT slug FROM cities WHERE name LIKE ? ORDER BY is_default DESC, name LIMIT 1',
-        [addcslashes($text, '%_\\') . '%'])->fetch();
+    $like = addcslashes($text, '%_\\') . '%';
+    $city = q('SELECT slug FROM cities WHERE name LIKE ? OR name_ru LIKE ? ORDER BY is_default DESC, name LIMIT 1',
+        [$like, $like])->fetch();
 }
 
 if ($city) {

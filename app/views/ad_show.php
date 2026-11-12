@@ -1,7 +1,7 @@
 <section class="section">
     <div class="wrap listing">
         <div class="listing-main">
-            <p class="crumb"><a href="<?= url('market') ?>">Marketplace</a> / <a href="<?= url('market?city=' . $ad['city_slug']) ?>"><?= e($ad['city']) ?></a> / <a href="<?= url('market?category=' . $ad['category_slug']) ?>"><?= e($ad['category']) ?></a></p>
+            <p class="crumb"><a href="<?= url('market') ?>"><?= et('Marketplace') ?></a> / <a href="<?= url('market?city=' . $ad['city_slug']) ?>"><?= e($ad['city']) ?></a> / <a href="<?= url('market?category=' . $ad['category_slug']) ?>"><?= e($ad['category']) ?></a></p>
             <h1><?= e($ad['title']) ?></h1>
             <p class="listing-price"><?= e(price_label($ad['price'])) ?></p>
 
@@ -15,17 +15,17 @@
 
             <?php if ($isOwner): ?>
                 <div class="owner-bar">
-                    <a class="btn btn-ghost btn-sm" href="<?= url('market/' . $ad['slug'] . '/edit') ?>">Edit advertisement</a>
-                    <form method="post" action="<?= url('market/' . $ad['slug'] . '/delete') ?>" data-confirm="Delete this advertisement? This cannot be undone.">
+                    <a class="btn btn-ghost btn-sm" href="<?= url('market/' . $ad['slug'] . '/edit') ?>"><?= et('Edit advertisement') ?></a>
+                    <form method="post" action="<?= url('market/' . $ad['slug'] . '/delete') ?>" data-confirm="<?= et('Delete this advertisement? This cannot be undone.') ?>">
                         <?= csrf_field() ?>
-                        <button class="btn btn-danger btn-sm" type="submit">Delete advertisement</button>
+                        <button class="btn btn-danger btn-sm" type="submit"><?= et('Delete advertisement') ?></button>
                     </form>
                 </div>
             <?php endif ?>
         </div>
 
-        <aside class="contact" aria-label="Contact the seller">
-            <h2>Contact the seller</h2>
+        <aside class="contact" aria-label="<?= et('Contact the seller') ?>">
+            <h2><?= et('Contact the seller') ?></h2>
             <p class="byline">
                 <span class="avatar" aria-hidden="true"><?= e(initials($ad['author'])) ?></span>
                 <span><strong><?= e($ad['author']) ?></strong><br><?= e($ad['university']) ?></span>
@@ -33,7 +33,7 @@
 
             <div class="contact-actions">
                 <?php if ($ad['phone']): ?>
-                    <a class="btn btn-navy" href="tel:<?= e($ad['phone']) ?>">Call <?= e($ad['phone']) ?></a>
+                    <a class="btn btn-navy" href="tel:<?= e($ad['phone']) ?>"><?= et('Call') ?> <?= e($ad['phone']) ?></a>
                 <?php endif ?>
                 <?php if ($ad['whatsapp']): ?>
                     <a class="btn btn-whatsapp" href="https://wa.me/<?= e(ltrim($ad['whatsapp'], '+')) ?>" target="_blank" rel="noopener">WhatsApp <?= e($ad['whatsapp']) ?></a>
@@ -44,12 +44,12 @@
             </div>
 
             <dl class="contact-facts">
-                <dt>Address</dt>
+                <dt><?= et('Address') ?></dt>
                 <dd><?= e($ad['address']) ?>, <?= e($ad['city']) ?></dd>
-                <dt>Posted</dt>
+                <dt><?= et('Posted') ?></dt>
                 <dd><?= e(short_date($ad['created_at'])) ?></dd>
             </dl>
-            <p class="contact-note">Meet in a public place and check the item before you pay.</p>
+            <p class="contact-note"><?= et('Meet in a public place and check the item before you pay.') ?></p>
         </aside>
     </div>
 </section>
@@ -58,8 +58,8 @@
 <section class="section section-tint">
     <div class="wrap">
         <div class="section-head" data-reveal>
-            <h2>Also for sale in <?= e($ad['city']) ?></h2>
-            <a class="more" href="<?= url('market?city=' . $ad['city_slug']) ?>">All in <?= e($ad['city']) ?></a>
+            <h2><?= et('Also for sale in %s', $ad['city']) ?></h2>
+            <a class="more" href="<?= url('market?city=' . $ad['city_slug']) ?>"><?= et('All advertisements') ?></a>
         </div>
         <div class="offers">
             <?php foreach ($more as $m): ?>
