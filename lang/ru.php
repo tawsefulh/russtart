@@ -53,7 +53,6 @@ return [
 
     // ---------- home ----------
     'Student guides and marketplace for life in Russia' => 'Советы студентов и объявления для жизни в России',
-    'Made by a student from Bangladesh' => 'Сделано студентом из Бангладеш',
     'Landing in Russia soon?' => 'Скоро в Россию?',
     'Read the students' => 'Читайте студентов,',
     'who got there first.' => 'которые уже здесь.',

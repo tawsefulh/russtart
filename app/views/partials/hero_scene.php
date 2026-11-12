@@ -34,6 +34,7 @@ $dome = function (float $cx, float $base, float $w, float $towerH): string {
             $cx + $w * 0.22, $y - $w * 0.95, $cx + $w * 0.95, $y - $w * 0.55, $cx + $w * 0.36, $y);
 };
 ?>
+<div class="hero-bg">
 <?php if ($photo): ?>
     <div class="hero-scene hero-photo" style="background-image: url('<?= asset('img/hero.jpg') ?>')" aria-hidden="true"></div>
 <?php else: ?>
@@ -107,8 +108,5 @@ $dome = function (float $cx, float $base, float $w, float $towerH): string {
 
 <canvas class="hero-snow" data-snow aria-hidden="true"></canvas>
 
-<div class="hero-flag">
-    <div class="flag-pole" aria-hidden="true"></div>
-    <div class="flag-cloth" aria-hidden="true"><?php for ($i = 0; $i < 30; $i++): ?><i style="--i:<?= $i ?>"></i><?php endfor ?></div>
-    <p class="flag-note"><?= et('Made by a student from Bangladesh') ?></p>
+    <div class="hero-flag" aria-hidden="true"><?php for ($i = 0; $i < 30; $i++): ?><i style="--i:<?= $i ?>"></i><?php endfor ?></div>
 </div>
