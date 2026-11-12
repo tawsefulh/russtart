@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 56" role="img" aria-label="RusStart">
+  <style>@import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@600&amp;display=swap');</style>
+  <g transform="translate(4 4)">
+    <rect width="48" height="48" rx="13" fill="#245E82"/>
+    <path d="M17 33V24a10 10 0 0 1 10-10h4" fill="none" stroke="#FDFDFD" stroke-width="4.6" stroke-linecap="round"/>
+    <circle cx="17" cy="34" r="4.4" fill="#245E82" stroke="#4AB8B8" stroke-width="3.2"/>
+    <circle cx="33" cy="14" r="4.8" fill="#EC5A24"/>
+  </g>
+  <text x="66" y="37" font-family="Unbounded, 'Arial Black', Arial, sans-serif" font-weight="600" font-size="25" letter-spacing="-0.6">
+    <tspan fill="#245E82">rus</tspan><tspan fill="#EC5A24">start</tspan>
+  </text>
+</svg>

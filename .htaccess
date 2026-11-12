@@ -1,0 +1,16 @@
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Never serve application code, config or SQL directly
+    RewriteRule ^(app|config|database)(/|$) - [F,L]
+    RewriteRule (^|/)\.(git|htaccess|gitignore) - [F,L]
+
+    # Real files (css, js, images, uploads) are served as they are
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [L]
+
+    # Everything else goes to the front controller
+    RewriteRule ^ index.php [L]
+</IfModule>

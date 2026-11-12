@@ -1,0 +1,12 @@
+# Local / production secrets
+config/config.local.php
+
+# User uploads (keep the folder and its .htaccess)
+uploads/*
+!uploads/.htaccess
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

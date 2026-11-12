@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-label="RusStart">
+  <rect width="48" height="48" rx="13" fill="#245E82"/>
+  <path d="M17 33V24a10 10 0 0 1 10-10h4" fill="none" stroke="#FDFDFD" stroke-width="4.6" stroke-linecap="round"/>
+  <circle cx="17" cy="34" r="4.4" fill="#245E82" stroke="#4AB8B8" stroke-width="3.2"/>
+  <circle cx="33" cy="14" r="4.8" fill="#EC5A24"/>
+</svg>
