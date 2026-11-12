@@ -708,8 +708,8 @@ button.avatar:hover, button.avatar[aria-expanded="true"] { box-shadow: 0 0 0 4px
 .footer-base { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 32px; margin-top: 64px; padding: 24px 0 28px; border-top: 1px solid rgba(253, 253, 253, .14); font-size: .875rem; }
 .footer-credit { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; color: rgba(253, 253, 253, .78); }
 .footer-credit strong { color: var(--teal); font-weight: 700; }
-.footer-credit a { color: var(--white); text-underline-offset: 3px; transition: color var(--mid) var(--ease); }
-.footer-credit a:hover { color: var(--teal); }
+.footer-credit a { color: #FF7A45; font-weight: 600; text-underline-offset: 3px; transition: color var(--mid) var(--ease); }
+.footer-credit a:hover { color: var(--white); }
 
 /* footer reveal: the page slides up like a sheet and uncovers the footer underneath */
 @media (min-width: 900px) and (min-height: 620px) {
