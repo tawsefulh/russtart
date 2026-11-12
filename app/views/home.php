@@ -1,6 +1,7 @@
 <?php $cityNames = array_column(all_cities(), 'name'); ?>
 
 <section class="hero">
+    <?php partial('hero_scene') ?>
     <div class="wrap hero-inner">
         <h1 class="hero-title">
             <span class="line"><span><?= et('Landing in Russia soon?') ?></span></span>
@@ -63,7 +64,7 @@
         <h2><?= et('Find answers by topic') ?></h2>
         <ul>
             <?php foreach ($topics as $t): ?>
-                <li><a href="<?= url('articles?category=' . $t['slug']) ?>"><?= e($t['name']) ?><?php if ($t['total']): ?><b><?= (int) $t['total'] ?></b><?php endif ?></a></li>
+                <li><a href="<?= url('articles?category=' . $t['slug']) ?>"><span><?= e($t['name']) ?></span><small><?= e(tn((int) $t['total'], 'article')) ?></small></a></li>
             <?php endforeach ?>
         </ul>
     </div>

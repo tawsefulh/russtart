@@ -126,7 +126,7 @@ $jsText = [
     </div>
     <div class="wrap footer-base">
         <p>&copy; <?= date('Y') ?> RusStart. <?= et('Advertisements are posted by members; meet in public places and check items before paying.') ?></p>
-        <p class="footer-credit">Build By Hasan Md Tawseful</p>
+        <p class="footer-credit">Build By <strong>Hasan Md Tawseful</strong> <a href="mailto:tawsefulh@gmail.com">tawsefulh@gmail.com</a></p>
     </div>
 </footer>
 

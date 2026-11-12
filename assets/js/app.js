@@ -47,6 +47,80 @@
         }
     }
 
+    /* ---------- hero snowfall ---------- */
+
+    const snow = $('[data-snow]');
+    if (snow && snow.getContext) {
+        const ctx = snow.getContext('2d');
+        const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        let w = 0, h = 0, flakes = [], running = false, last = 0;
+
+        // one soft white dot, reused for every flake
+        const dot = document.createElement('canvas');
+        dot.width = dot.height = 32;
+        const dctx = dot.getContext('2d');
+        const grad = dctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+        grad.addColorStop(0, 'rgba(255,255,255,1)');
+        grad.addColorStop(0.45, 'rgba(255,255,255,.75)');
+        grad.addColorStop(1, 'rgba(255,255,255,0)');
+        dctx.fillStyle = grad;
+        dctx.fillRect(0, 0, 32, 32);
+
+        const makeFlake = (anywhere) => {
+            const depth = Math.random();                       // 0 = far, 1 = close to the viewer
+            return {
+                x: Math.random() * w,
+                y: anywhere ? Math.random() * h : -20,
+                size: 3 + depth * depth * 15,
+                speed: 16 + depth * 52,                        // pixels per second: slow and calm
+                sway: 8 + Math.random() * 22,
+                phase: Math.random() * Math.PI * 2,
+                alpha: 0.3 + depth * 0.6,
+            };
+        };
+
+        const resize = () => {
+            const ratio = Math.min(window.devicePixelRatio || 1, 2);
+            w = snow.clientWidth; h = snow.clientHeight;
+            snow.width = w * ratio; snow.height = h * ratio;
+            ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+            const count = Math.min(240, Math.round((w * h) / 7000));
+            flakes = Array.from({ length: count }, () => makeFlake(true));
+            if (still) draw(0);
+        };
+
+        const draw = (dt) => {
+            ctx.clearRect(0, 0, w, h);
+            flakes.forEach((f, i) => {
+                f.y += f.speed * dt;
+                f.phase += dt * 0.7;
+                const x = f.x + Math.sin(f.phase) * f.sway;
+                if (f.y > h + 20) flakes[i] = makeFlake(false);
+                ctx.globalAlpha = f.alpha;
+                ctx.drawImage(dot, x - f.size / 2, f.y - f.size / 2, f.size, f.size);
+            });
+        };
+
+        const tick = (now) => {
+            if (!running) return;
+            const dt = Math.min((now - last) / 1000, 0.05);
+            last = now;
+            draw(dt);
+            requestAnimationFrame(tick);
+        };
+
+        resize();
+        window.addEventListener('resize', resize);
+        if (!still) {
+            // only animate while the hero is on screen
+            new IntersectionObserver(([entry]) => {
+                const visible = entry.isIntersecting;
+                if (visible && !running) { running = true; last = performance.now(); requestAnimationFrame(tick); }
+                else if (!visible) running = false;
+            }).observe(snow);
+        }
+    }
+
     /* ---------- hero route: every city, scroll with arrows or by dragging ---------- */
 
     const routeWrap = $('[data-route]');
