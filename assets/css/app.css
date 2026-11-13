@@ -257,27 +257,30 @@ button.avatar:hover, button.avatar[aria-expanded="true"] { box-shadow: 0 0 0 4px
 
 .hero-snow { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none; }
 
-/* flag of Bangladesh in the bottom-right corner: held at the screen edge, free end waving inwards */
+/* friendship flag in the sky, right of the headline: Russian tricolour on the hoist side,
+   Bangladesh on the free side, joined on a diagonal. Built from 30 strips so it can wave. */
 .hero-flag {
-    --c: 4px;                                   /* width of one cloth strip; the flag is 30 strips wide */
-    position: absolute; z-index: 2; right: 0; bottom: 12px;
-    display: flex; flex-direction: row-reverse;  /* strip 0 sits against the right edge */
-    height: calc(var(--c) * 18);
-    filter: drop-shadow(0 10px 16px rgba(8, 26, 38, .4));
+    --c: 7px;                                   /* width of one strip; the flag is 30 strips wide and 18 tall */
+    position: absolute; z-index: 2;
+    right: clamp(20px, 5vw, 96px); top: clamp(104px, 17vh, 176px);
+    display: flex; height: calc(var(--c) * 18);
+    transform: rotate(-5deg);
+    filter: drop-shadow(0 16px 22px rgba(8, 26, 38, .45));
     animation: rise 1.6s var(--ease) .9s both;
 }
 .hero-flag i {
     flex: 0 0 var(--c); height: 100%;
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Crect width='10' height='6' fill='%23006A4E'/%3E%3Ccircle cx='5.5' cy='3' r='2' fill='%23F42A41'/%3E%3C/svg%3E") no-repeat;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 18'%3E%3Crect width='30' height='6' fill='%23FFFFFF'/%3E%3Crect y='6' width='30' height='6' fill='%230039A6'/%3E%3Crect y='12' width='30' height='6' fill='%23D52B1E'/%3E%3Cpath d='M18 0h12v18H12z' fill='%23006A4E'/%3E%3Ccircle cx='22' cy='9' r='4.3' fill='%23F42A41'/%3E%3C/svg%3E") no-repeat;
     background-size: calc(var(--c) * 30) calc(var(--c) * 18);
-    background-position: calc((29 - var(--i)) * var(--c) * -1) 0;
+    background-position: calc(var(--i) * var(--c) * -1) 0;
     animation: flag-wave 1.5s ease-in-out infinite alternate;
     animation-delay: calc(var(--i) * -85ms);
 }
+.hero-flag i:first-child { border-radius: 3px 0 0 3px; }
 /* each strip moves a little more than the one before it, so the wave grows towards the free end */
 @keyframes flag-wave {
-    from { transform: translateY(calc(var(--i) * -.24px)); filter: brightness(.84); }
-    to   { transform: translateY(calc(var(--i) * .24px)); filter: brightness(1.1); }
+    from { transform: translateY(calc(var(--i) * -.3px)); filter: brightness(.84); }
+    to   { transform: translateY(calc(var(--i) * .3px)); filter: brightness(1.1); }
 }
 
 .hero-inner { position: relative; z-index: 4; display: flex; flex-direction: column; }
@@ -314,12 +317,12 @@ button.avatar:hover, button.avatar[aria-expanded="true"] { box-shadow: 0 0 0 4px
 .route-wrap { position: relative; }
 .route { padding: clamp(60px, 10vh, 96px) 0 clamp(28px, 6vh, 54px); overflow-x: auto; scrollbar-width: none; }
 .route::-webkit-scrollbar { display: none; }
-.can-scroll .route { cursor: grab; -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 150px), transparent calc(100% - 30px)); mask-image: linear-gradient(90deg, #000 calc(100% - 150px), transparent calc(100% - 30px)); }
+.can-scroll .route { cursor: grab; -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 90px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 90px), transparent); }
 .can-scroll .route.dragging { cursor: grabbing; scroll-behavior: auto; }
 .can-scroll .route.dragging a { pointer-events: none; }
 .route ol { position: relative; display: flex; justify-content: space-between; gap: clamp(28px, 4vw, 56px); min-width: max-content; padding: 4px 0 0; }
-.can-scroll .route ol { padding-right: 150px; }
-.can-scroll .route ol::before { right: 159px; }
+.can-scroll .route ol { padding-right: 90px; }
+.can-scroll .route ol::before { right: 99px; }
 .route-arrows { position: absolute; right: 0; top: clamp(6px, 2vh, 22px); display: flex; gap: 8px; animation: rise 1.1s var(--ease) 1.4s both; }
 .route-arrows[hidden] { display: none; }
 .route-arrows button {
@@ -419,26 +422,51 @@ button.avatar:hover, button.avatar[aria-expanded="true"] { box-shadow: 0 0 0 4px
 /* ---------- Topics ---------- */
 
 .topics h2 { font-size: clamp(1.5rem, 2.8vw, 2.125rem); margin-bottom: 36px; }
-.topics ul { --cols: 5; --gap: 18px; display: flex; flex-wrap: wrap; justify-content: center; gap: var(--gap); }
-.topics li { flex: 0 0 calc((100% - (var(--cols) - 1) * var(--gap)) / var(--cols)); min-width: 0; }
-.topics a {
-    position: relative; isolation: isolate; overflow: hidden;
-    display: flex; flex-direction: column; justify-content: space-between; gap: 14px;
-    height: 100%; min-height: 104px; padding: 18px 20px;
-    border-radius: var(--radius); background: var(--white); color: var(--ink);
-    font-weight: 600; line-height: 1.3; text-decoration: none;
-    box-shadow: 0 1px 0 var(--line);
-    transition: color var(--mid) var(--ease), transform var(--mid) var(--ease), box-shadow var(--mid) var(--ease);
+/* five page-shaped cards per row; a shorter last row sits in the centre */
+.topics ul { --cols: 5; --gap: 22px; display: flex; flex-wrap: wrap; justify-content: center; gap: var(--gap); }
+.topics li {
+    flex: 0 0 calc((100% - (var(--cols) - 1) * var(--gap)) / var(--cols)); min-width: 0;
+    filter: drop-shadow(0 14px 18px rgba(20, 54, 72, .16));
+    transition: transform var(--mid) var(--ease), filter var(--mid) var(--ease);
 }
-.topics a::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--navy); transform: translateY(101%); transition: transform var(--mid) var(--ease); }
-.topics a:hover { color: var(--white); transform: translateY(-4px); box-shadow: 0 18px 30px -18px rgba(20, 54, 72, .6); }
-.topics a:hover::before { transform: none; }
-.topics small { font-size: .8125rem; font-weight: 500; color: var(--ink-soft); transition: color var(--mid) var(--ease); }
-.topics a:hover small { color: var(--teal); }
-@media (max-width: 1100px) { .topics ul { --cols: 4; } }
-@media (max-width: 860px) { .topics ul { --cols: 3; } }
-@media (max-width: 600px) { .topics ul { --cols: 2; --gap: 12px; } .topics a { min-height: 92px; padding: 14px 16px; } }
-@media (min-width: 1600px) { .topics ul { --cols: 6; } }
+.topics li:hover { transform: translateY(-8px) rotate(-.6deg); filter: drop-shadow(0 26px 26px rgba(20, 54, 72, .26)); }
+
+/* the sheet: top-right corner cut away, with a small fold drawn over it */
+.page-card {
+    --fold: 26px;
+    position: relative; display: flex; flex-direction: column; height: 100%;
+    background: var(--white); color: var(--ink); text-decoration: none;
+    border-radius: 6px 0 6px 6px;
+    clip-path: polygon(0 0, calc(100% - var(--fold)) 0, 100% var(--fold), 100% 100%, 0 100%);
+}
+.page-card::after {
+    content: ""; position: absolute; top: 0; right: 0; width: var(--fold); height: var(--fold);
+    background: linear-gradient(225deg, transparent 50%, #E4EEF2 50%, #FDFDFD 100%);
+    border-bottom-left-radius: 5px;
+    box-shadow: -3px 3px 6px rgba(20, 54, 72, .22);
+    transition: width var(--mid) var(--ease), height var(--mid) var(--ease);
+}
+.topics li:hover .page-card { --fold: 34px; }
+.page-card:hover { color: var(--ink); }
+
+.page-art { position: relative; display: block; aspect-ratio: 5 / 3.4; overflow: hidden; margin: 10px 10px 0; border-radius: 3px; }
+.page-scene { position: absolute; inset: -4px; width: calc(100% + 8px); height: calc(100% + 8px); filter: blur(1.4px); transition: transform 1.4s var(--ease); }
+.topics li:hover .page-scene { transform: scale(1.1); }
+.page-icon {
+    position: absolute; left: 50%; top: 46%; width: clamp(34px, 3.4vw, 46px); height: auto; aspect-ratio: 1;
+    transform: translate(-50%, -50%); color: var(--white);
+    filter: drop-shadow(0 3px 8px rgba(8, 26, 38, .45));
+    transition: transform var(--mid) var(--ease);
+}
+.topics li:hover .page-icon { transform: translate(-50%, -62%); }
+
+.page-text { display: flex; flex-direction: column; justify-content: space-between; gap: 12px; flex: 1; padding: 16px 16px 18px; }
+.page-title { font-weight: 600; line-height: 1.3; }
+.page-text small { font-size: .8125rem; color: var(--ink-soft); padding-top: 10px; border-top: 1px solid var(--line); }
+
+@media (max-width: 1000px) { .topics ul { --cols: 4; --gap: 18px; } }
+@media (max-width: 780px) { .topics ul { --cols: 3; --gap: 16px; } }
+@media (max-width: 520px) { .topics ul { --cols: 2; --gap: 12px; } .page-card { --fold: 20px; } .page-text { padding: 12px 12px 14px; } .page-art { margin: 8px 8px 0; } }
 
 /* ---------- Marketplace ---------- */
 
@@ -793,9 +821,11 @@ button.avatar:hover, button.avatar[aria-expanded="true"] { box-shadow: 0 0 0 4px
     .form-actions { flex-direction: column; align-items: stretch; }
 }
 
+@media (max-width: 1180px) { .hero-flag { --c: 5px; } }
 @media (max-width: 760px) {
     .hero::before { background: rgba(18, 56, 80, .72); }
-    .hero-flag { --c: 3px; bottom: 8px; }
+    .hero { padding-top: 156px; }
+    .hero-flag { --c: 3px; right: 20px; top: 84px; }
 }
 
 /* small phones */

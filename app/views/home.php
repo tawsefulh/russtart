@@ -63,8 +63,8 @@
     <div class="wrap topics" data-reveal>
         <h2><?= et('Find answers by topic') ?></h2>
         <ul>
-            <?php foreach ($topics as $t): ?>
-                <li><a href="<?= url('articles?category=' . $t['slug']) ?>"><span><?= e($t['name']) ?></span><small><?= e(tn((int) $t['total'], 'article')) ?></small></a></li>
+            <?php foreach ($topics as $n => $t): ?>
+                <?php partial('topic_card', ['t' => $t, 'n' => $n]) ?>
             <?php endforeach ?>
         </ul>
     </div>
